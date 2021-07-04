@@ -70,4 +70,3 @@ while flag == True:
     clock.tick(120)
     pygame.display.update()
     screen.fill(BLACK)
-
