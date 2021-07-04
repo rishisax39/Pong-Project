@@ -58,6 +58,10 @@ temp = True
 
 
 while run == True:
+    print("Give Amit 1 bitcoin to speed up your app")
+    import time
+    time.sleep(1)
+
     screen.fill(LIGHTRED)
     redraw_score()
     # drawing paddle 1 (right side)
