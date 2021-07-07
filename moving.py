@@ -24,13 +24,13 @@ speed = 3
 def get_mouse_pos():
     x, y = pygame.mouse.get_pos()
     return x, y
-def calc_radians (HW, HH, my, mx):
+def calc_radians (x1, y1, x2, y2):
     """
     Calculate the distance between 2 points
     XXX: You're using argument names that are the variables of how you use this function, but that doesn't have to be so. 
         Instead, I suggest dissoaciating the argument names from how they're removed for readability.  I.E use (x1, y1, x2, y2) 
     """
-    radvalue = math.atan2(my - HH, mx - HW)
+    radvalue = math.atan2(y2 - y1, x2 - x1)
     return radvalue
 def calc_distance(radians, mx, my):
     """
@@ -86,22 +86,16 @@ while flag == True:
      for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = get_mouse_pos()
-            radians = calc_radians(HW, HH, my, mx)
+            radians = calc_radians(x, y, mx, my)
             print(radians)
             distance = calc_distance(radians, mx, my)
             dx = calc_x_direction(radians)
             dy = calc_y_direction(radians)
             draw_circle_small(mx, my)
             print("click")
-
-
-
-
-     if distance > 0:
-         distance -= 1
-         x += dx
-         y += dy
-         draw_circle_big()
+            x += dx
+            y += dy
+            draw_circle_big()
 
 
 
