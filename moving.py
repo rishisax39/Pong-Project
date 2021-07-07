@@ -3,7 +3,7 @@ import math
 import sys
 import random
 flag = True
-
+W,H = 1920, 1080
 dx,dy = 0,0
 distance = 0
 
@@ -12,61 +12,66 @@ RED = (255,0,0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 
-
-# display surface
-W = 1000
-H = 1000
-HW = W/2
-HH = H/2
-
-x,y = HW, HH
-dx,dy = 0,0
-pmx,pmy = x,y
-dx,dy =0,0
-distance = 0
-speed = 3
-
 # initialize display
 pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((W,H))
+HW = W/2
+HH = H/2
+x,y = HW, HH
+speed = 3
 
-while flag == True:
-    # quit game sequence
+def get_mouse_pos():
+    x, y = pygame.mouse.get_pos()
+    return x, y
+def calc_radians (HW, HH, my, mx):
+    radvalue = math.atan2(my - HH, mx - HW)
+    return radvalue
+def calc_distance(radians, mx, my):
+    disvalue = math.hypot(mx-HW, my-HH)
+    return int(disvalue)
+def calc_x_direction(radians):
+    x = math.cos(radians) * speed
+    return x
+def calc_y_direction(radians):
+    y = math.sin(radians) * speed
+    return y
+def draw_circle_big():
+    pygame.draw.circle(screen,WHITE,(int(x),int(y)), 25)
+def draw_circle_small(x, y):
+    pygame.draw.circle(screen, RED, (x, y), 5)
+def quit():
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             pygame.quit()
             sys.exit()
-        # when mouse clicked
-        if event.type == pygame.MOUSEBUTTONDOWN and not distance:
-            print("reached click")
-            # return position of mouse cursor and set to mx, my
-            mx, my = pygame.mouse.get_pos()
-            print(mx)
-            radians = math.atan2(my-pmy, mx - pmx)
-            # calc distance from cursor to circle, a^2 + b^2 = c^2
-            distance = math.hypot(mx-pmx,my-pmy)/3
-            distance = int(distance)
+while flag == True:
+     # quit()
+     screen.fill(BLACK)
+     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = get_mouse_pos()
+            radians = calc_radians(HW, HH, my, mx)
+            print(radians)
+            distance = calc_distance(radians, mx, my)
+            dx = calc_x_direction(radians)
+            dy = calc_y_direction(radians)
+            draw_circle_small(mx, my)
+            print("click")
 
-            # calc distance to travel x coordinate
-            dx = math.cos(radians) * speed
-            # calc distance to travel y coordinate
-            dy = math.sin(radians) * speed
 
-            pmx, pmy = mx, my
-            # move white circle sequence
-            if distance > 0:
-                print("dx is: " + str(dx))
-                print("dy is: " + str(dy))
-                # adding direction to x y
-                x += dx
-                y += dy
-                distance -= 1
-                print("reached distance > 0")
-            pygame.draw.circle(screen, WHITE, (int(x), int(y)), 25, 0)
-            if distance > 0:
-                pygame.draw.circle(screen, RED, (pmx, pmy), 5, 0)
-                # print("reached distance " + str(distance))
-    clock.tick(120)
-    pygame.display.update()
-    screen.fill(BLACK)
+
+
+     if distance > 0:
+         distance -= 1
+         x += dx
+         y += dy
+         draw_circle_big()
+
+
+
+
+
+     clock.tick(120)
+     pygame.display.update()
+
