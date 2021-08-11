@@ -25,6 +25,9 @@ br = 20
 playing = False
 
 class Ball:
+    direction = 10
+    speed = 5
+
     def __init__ (self,screen,color,posX,posY,radius): #construct ball object
         self.screen = screen
         self.color = color
@@ -35,9 +38,10 @@ class Ball:
         self.dy = 0
         self.show()
     def start_moving(self):  #start moving ball by adding values to direction variables
-        self.dx = 0
-        self.dy = -5
+        self.dx = 5
+        self.dy = 5
     def move_ball(self):     #move ball by changing position coordinates of ball
+        print("dy is", self.dy)
         self.posX = self.posX + self.dx
         self.posY = self.posY + self.dy
     def show(self):
@@ -49,7 +53,16 @@ class Ball:
         self.dy *= -1
 
     def collisionBottomWall(self):
-        pass
+        print("reached bottom wall")
+        self.dy *= -1
+
+    def calcRadians(self):
+        radians = math.tan(self.dy/self.dx)
+        return radians
+
+    def collideWithPaddle(self,radian):
+        self.posX = self.posX + (math.cos(radian) * self.dx)
+        self.posY = self.posY + (math.sin(radian) * self.dy)
 
 class Paddle:
     def __init__(self,display, color, posX, posY, width, height):
@@ -68,7 +81,6 @@ class Paddle:
         if keys[py.K_DOWN]:
             self.posY += 20
 
-
     def movePaddle1Up(self):
         keys = py.key.get_pressed()
         if keys[py.K_UP]:
@@ -83,12 +95,6 @@ class Paddle:
         keys = py.key.get_pressed()
         if keys[py.K_w]:
             p2.posY -= 20
-
-
-
-
-
-
 
 def redraw_score():
     screen.fill(LIGHTRED)
@@ -109,15 +115,14 @@ def redraw_score():
 
 # create ball object
 ball = Ball(screen, WHITE, width//2, height//2,15 )
-
 # create paddle object
 p1 = Paddle(screen,WHITE,925,400, 25, 150)
 p2 = Paddle(screen,WHITE,100,400, 25, 150)
 
+# add speed to the ball
+ball.start_moving()
 
-
-
-
+# Game Loop
 while run == True:
     screen.fill(LIGHTRED)
     redraw_score()
@@ -130,9 +135,9 @@ while run == True:
         if event.type == py.QUIT:
             print("reached")
             py.quit()
-    ball.start_moving()
+
     ball.move_ball()
-    ball.show()
+
 
     # paddle movement up and down algorithm
     if p1.posY < 840:
@@ -145,10 +150,23 @@ while run == True:
         p2.movePaddle2Up()
 
     # detect collision with top wall
-    if ball.posY <= 100:
-        print("reached collis")
+    if ball.posY <= 115:
         ball.collisionTopWall()
+    # detect collision with bottom wall
+    if ball.posY >= 1000:
+        ball.collisionBottomWall()
 
+    # detect collision with paddle 1 (right one)
+    if ball.posX >= p1.posX:
+        radiansAngle = ball.calcRadians()
+        ball.collideWithPaddle(radiansAngle)
+    # detect collision with paddle 2 (left one)
+    if ball.posX <= p2.posX:
+        radiansAngle = ball.collideWithPaddle()
+        ball.collideWithPaddle(radiansAngle)
+
+    # render ball to screen
+    ball.show()
 
     # draw score bar
     py.draw.rect(screen,WHITE,(0,100,1000,15))
