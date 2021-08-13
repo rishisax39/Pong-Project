@@ -19,7 +19,7 @@ screen = pygame.display.set_mode((W,H))
 HW = W/2
 HH = H/2
 x,y = HW, HH
-speed = 3
+
 
 def get_mouse_pos():
     x, y = pygame.mouse.get_pos()
@@ -32,28 +32,28 @@ def calc_radians (x1, y1, x2, y2):
     """
     radvalue = math.atan2(y2 - y1, x2 - x1)
     return radvalue
-def calc_distance(radians, mx, my):
+def calc_distance(x1, y1, x2, y2):
     """
     Calculates the distance between two points. 
     XXX: The arguments should actually be (x1, y1, x2, y2)
     """
-    disvalue = math.hypot(mx-HW, my-HH)
+    disvalue = math.hypot(x2-x1, y2-y1)
     return int(disvalue)
-def calc_x_direction(radians):
+def calc_x_direction(speed, radians):
     """
     Calculates the x-delta traveling "distance" at the specified angle
     XXX: arguments should be (distance, radians), and use distance instead of speed so this function is pure.  
     """
     x = math.cos(radians) * speed
     return x
-def calc_y_direction(radians):
+def calc_y_direction(speed, radians):
     """
     Calculates the y-delta traveling "distance" at the specified angle
     XXX: same as above
     """
     y = math.sin(radians) * speed
     return y
-def draw_circle_big():
+def draw_circle(surface,COLOR,center,radius):
     """
     Draws a circle on the screen.  
     XXX: 
@@ -61,46 +61,40 @@ def draw_circle_big():
         Example function signature draw_circle(centerx,centery,radius,color).  
         Then you can use this instead of "draw_circle_small"
     """
-    pygame.draw.circle(screen,WHITE,(int(x),int(y)), 25)
-def draw_circle_small(x, y):
-    """
-    Draws a small circle
-    XXX: I think this function can be removed. 
-    """
-    pygame.draw.circle(screen, RED, (x, y), 5)
-    
-def quit():
+    pygame.draw.circle(surface,COLOR,center,radius)
+def quit(QUIT, DOWN, ESCAPE):
     """
     Quit's the window if certain keys are pressed
     XXX: Make this function reusable by taking in the keys that should be pressed. 
     XXX: doesn't work
     """
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        if event.type == QUIT or (event.type == DOWN and event.key == ESCAPE):
             pygame.quit()
             sys.exit()
-     
+
 while flag == True:
-     # quit()
-     screen.fill(BLACK)
-     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mx, my = get_mouse_pos()
-            radians = calc_radians(x, y, mx, my)
-            print(radians)
-            distance = calc_distance(radians, mx, my)
-            dx = calc_x_direction(radians)
-            dy = calc_y_direction(radians)
-            draw_circle_small(mx, my)
-            print("click")
-            x += dx
-            y += dy
-            draw_circle_big()
+    quit(pygame.QUIT, pygame.KEYDOWN, pygame.K_ESCAPE)
+    screen.fill(BLACK)
+
+    mx, my = get_mouse_pos()
+    radians = calc_radians(x, y, mx, my)
+    print(radians)
+    distance = calc_distance(HW, HH, mx, my)
+    dx = calc_x_direction(3, radians)
+    dy = calc_y_direction(3, radians)
+    print("click")
+    x += dx
+    y += dy
+    sx, sy = get_mouse_pos()
+    smallcenter = (sx, sy)
+    bigcenter = (int(x), int(y))
+    draw_circle(screen, RED, smallcenter, 5)
+    draw_circle(screen, WHITE, bigcenter, 25)
 
 
 
 
-
-     clock.tick(120)
-     pygame.display.update()
+    clock.tick(120)
+    pygame.display.update()
 

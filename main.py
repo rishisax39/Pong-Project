@@ -1,5 +1,6 @@
 import pygame as py
 import sys
+import math
 sys.version
 py.init()
 
@@ -14,9 +15,8 @@ scorep1 = 0
 scorep2 = 0
 py.display.set_caption("Pong")
 clock = py.time.Clock()
-
+run = True
 speed = 5
-playing = False
 
 class Ball:
     direction = 10
@@ -50,13 +50,16 @@ class Ball:
         print("reached bottom wall")
         self.dy *= -1
 
-    def calcRadians(self):
-        radians = math.tan(self.dy/self.dx)
-        return radians
+def calc_radians(speedY,speedX):
+    angle = math.atan(speedY/speedX)
+    return angle
 
-    def collideWithPaddle(self,radian):
-        self.dx = self.dx + (math.cos(radian) * speed)
-        self.dy = self.dy + (math.sin(radian) * speed)
+def calc_speedX(angle, speed):
+    speedX = math.cos(angle) * speed
+    return speedX
+def calc_speedY(angle, speed):
+    speedY = math.sin(angle) * speed
+    return speedY
 
 class Paddle:
     def __init__(self,display, color, posX, posY, width, height):
@@ -152,13 +155,14 @@ while run == True:
 
     # detect collision with paddle 1 (right one)
     if ball.posX >= p1.posX:
-        radiansAngle = ball.calcRadians()
-        ball.collideWithPaddle(radiansAngle)
+        rad_angle = calc_radians(ball.dy, ball.dx)
+        ball.dx = calc_speedX(rad_angle,speed)
+        ball.dy = calc_speedY(rad_angle,speed)
     # detect collision with paddle 2 (left one)
     if ball.posX <= p2.posX:
-        radiansAngle = ball.collideWithPaddle()
-        ball.collideWithPaddle(radiansAngle)
-
+        rad_angle = calc_radians(ball.dy, ball.dx)
+        ball.dx = calc_speedX(rad_angle,speed)
+        ball.dy = calc_speedY(rad_angle,speed)
     # render ball to screen
     ball.show()
 
