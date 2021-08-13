@@ -15,13 +15,7 @@ scorep2 = 0
 py.display.set_caption("Pong")
 clock = py.time.Clock()
 
-vel = 20
-run = True
-bx = 490
-by = 500
-rectx = 490
-recty = 500
-br = 20
+speed = 5
 playing = False
 
 class Ball:
@@ -42,8 +36,8 @@ class Ball:
         self.dy = 5
     def move_ball(self):     #move ball by changing position coordinates of ball
         print("dy is", self.dy)
-        self.posX = self.posX + self.dx
-        self.posY = self.posY + self.dy
+        self.posX = self.posX + speed
+        self.posY = self.posY + speed
     def show(self):
         py.draw.circle(self.screen, self.color, (self.posX, self.posY), self.radius)
 
@@ -61,8 +55,8 @@ class Ball:
         return radians
 
     def collideWithPaddle(self,radian):
-        self.posX = self.posX + (math.cos(radian) * self.dx)
-        self.posY = self.posY + (math.sin(radian) * self.dy)
+        self.dx = self.dx + (math.cos(radian) * speed)
+        self.dy = self.dy + (math.sin(radian) * speed)
 
 class Paddle:
     def __init__(self,display, color, posX, posY, width, height):
